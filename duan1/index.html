@@ -1,1 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biện luận số nghiệm phương trình bậc 2</title>
+<style>
+:root{--bg:#f6f8fb;--fg:#1c2433;--mut:#5b6678;--card:#fff;--line:#d5dbe6;--acc:#1f4fd8;--r0:#b3261e;--r1:#9a6700;--r2:#17794a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141c;--fg:#e8ecf4;--mut:#9aa6ba;--card:#181e2a;--line:#2b3446;--acc:#7da2ff;--r0:#ff8a80;--r1:#f2c14e;--r2:#5fd49a}}
+:root[data-theme="dark"]{--bg:#10141c;--fg:#e8ecf4;--mut:#9aa6ba;--card:#181e2a;--line:#2b3446;--acc:#7da2ff;--r0:#ff8a80;--r1:#f2c14e;--r2:#5fd49a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;line-height:1.6}
+main{max-width:640px;margin:0 auto;padding:24px 16px 40px}
+h1{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-size:1.7rem;line-height:1.25;margin:0 0 6px}
+p.sub{margin:0 0 20px;color:var(--mut)}
+.eq{font-family:Georgia,"Times New Roman",serif;font-size:1.5rem;text-align:center;padding:14px;border:1px solid var(--line);background:var(--card);border-radius:10px;margin-bottom:20px}
+.eq input{width:4.2rem;font:inherit;font-size:1.3rem;text-align:center;border:none;border-bottom:2px solid var(--acc);background:transparent;color:var(--fg);padding:2px 0;margin:0 2px}
+.eq input:focus{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+.steps{border-left:3px solid var(--acc);padding-left:14px}
+.step{margin:0 0 16px}
+.step b.t{display:block;margin-bottom:2px}
+.math{font-family:Georgia,"Times New Roman",serif;font-size:1.1rem}
+.result{border:2px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--card);margin-top:6px}
+.result.r0{border-color:var(--r0)}.result.r1{border-color:var(--r1)}.result.r2{border-color:var(--r2)}
+.result strong{font-size:1.15rem}
+.result.r0 strong{color:var(--r0)}.result.r1 strong{color:var(--r1)}.result.r2 strong{color:var(--r2)}
+.err{color:var(--r0)}
+table{width:100%;border-collapse:collapse;margin-top:22px;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:var(--card)}
+tr.on td{background:color-mix(in srgb,var(--acc) 14%,transparent);font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Biện luận số nghiệm của phương trình bậc 2</h1>
+<p class="sub">Nhập hệ số a, b, c để xem từng bước giải.</p>
 
+<div class="eq" aria-label="Phương trình ax² + bx + c = 0">
+<input id="a" type="number" step="any" value="1" aria-label="Hệ số a">x² +
+<input id="b" type="number" step="any" value="-3" aria-label="Hệ số b">x +
+<input id="c" type="number" step="any" value="2" aria-label="Hệ số c"> = 0
+</div>
+
+<div class="steps" aria-live="polite">
+<div class="step"><b class="t">B₁: Xác định hệ số a, b và c</b><span class="math" id="s1"></span></div>
+<div class="step"><b class="t">B₂: Tính delta = b² − 4ac</b><span class="math" id="s2"></span></div>
+<div class="step"><b class="t">B₃: Kết luận</b>
+<div class="result" id="res"></div></div>
+</div>
+
+<table>
+<tr><th>Điều kiện</th><th>Kết luận</th></tr>
+<tr id="t0"><td>delta &lt; 0</td><td>Phương trình vô nghiệm</td></tr>
+<tr id="t1"><td>delta = 0</td><td>Phương trình có nghiệm duy nhất</td></tr>
+<tr id="t2"><td>delta &gt; 0</td><td>Phương trình có hai nghiệm phân biệt</td></tr>
+</table>
+</main>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var f=function(n){return String(Math.round(n*1e6)/1e6)};
+function run(){
+  var a=parseFloat($('a').value),b=parseFloat($('b').value),c=parseFloat($('c').value);
+  [0,1,2].forEach(function(i){$('t'+i).className=''});
+  var res=$('res');
+  if([a,b,c].some(isNaN)){
+    $('s1').textContent='';$('s2').textContent='';
+    res.className='result';res.innerHTML='<span class="err">Hãy nhập đủ ba hệ số a, b, c.</span>';return;
+  }
+  $('s1').textContent='a = '+f(a)+', b = '+f(b)+', c = '+f(c);
+  if(a===0){
+    $('s2').textContent='';
+    res.className='result';res.innerHTML='<span class="err">a phải khác 0 (a ≠ 0) thì mới là phương trình bậc 2.</span>';return;
+  }
+  var d=b*b-4*a*c;
+  $('s2').textContent='delta = ('+f(b)+')² − 4·('+f(a)+')·('+f(c)+') = '+f(d);
+  var k,txt,extra='';
+  if(d<0){k=0;txt='delta < 0: Phương trình vô nghiệm'}
+  else if(d===0){k=1;txt='delta = 0: Phương trình có nghiệm duy nhất';extra='x = '+f(-b/(2*a))}
+  else{k=2;txt='delta > 0: Phương trình có hai nghiệm phân biệt';
+    var s=Math.sqrt(d);extra='x₁ = '+f((-b+s)/(2*a))+',  x₂ = '+f((-b-s)/(2*a))}
+  $('t'+k).className='on';
+  res.className='result r'+k;
+  res.innerHTML='<strong><i>'+txt.replace('<','&lt;').replace('>','&gt;')+'</i></strong>'+(extra?'<div class="math">'+extra+'</div>':'');
+}
+['a','b','c'].forEach(function(i){$(i).addEventListener('input',run)});
+run();
+})();
+</script>
+</body>
+</html>
